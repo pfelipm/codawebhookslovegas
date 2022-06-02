@@ -1,6 +1,6 @@
 /**
- * Some PoC Apps Script functions that send data to a Coda document
- * using automations triggered by a Coda webhook
+ * Some PoC Apps Script functions that do stuff with data in a Coda document
+ * table using automations triggered by Coda webhooks.
  * Test Doc: https://coda.io/d/_ddHZiRsJNFq/Webhooks_sufNH
  *
  * @pfelipm (01/06/22)
