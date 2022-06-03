@@ -12,7 +12,7 @@ function codaSendData() {
 
   ss = SpreadsheetApp.getActiveSheet();
   ss.getRange(STATUS).clearContent();
-  const data = ss.getRange(HEADING_ROW + 1, 1, ss.getLastRow() - HEADING_ROW, 4).getValues();
+  const data = ss.getRange(HEADING_ROW + 1, 1, ss.getLastRow() - HEADING_ROW, DATA_COLUMNS).getValues();
   const requests = [];
   data.forEach(row => {
     requests.push(
@@ -26,7 +26,8 @@ function codaSendData() {
           rank: row[1],
           lastFight: row[2],
           won: row[3]
-        })
+        }),
+        muteHttpExceptions: true
       });
   });
   const resultCodes = UrlFetchApp.fetchAll(requests).map(result => result.getResponseCode());
@@ -52,6 +53,7 @@ function codaEmptyTable() {
       method: 'post',
       headers: { Authorization: `Bearer ${AUTH.token}` },
       contentType: 'application/json',
+      muteHttpExceptions: true
     }
   ).getResponseCode();
 
@@ -65,7 +67,7 @@ function codaEmptyTable() {
 
 /**
  * Pings a Coda automation endpoint that sets a user control
- * to apply filter data of a table in a specific way.
+ * to apply filtering to a table in a specific way.
  */
 function codaFilterTable() {
 
@@ -78,7 +80,8 @@ function codaFilterTable() {
       method: 'post',
       headers: { Authorization: `Bearer ${AUTH.token}` },
       contentType: 'application/json',
-      payload: JSON.stringify({ rank: !rank ? 'A+,A,B,C,D,E' : rank })
+      payload: JSON.stringify({ rank: !rank ? 'A+,A,B,C,D,E' : rank }),
+      muteHttpExceptions: true
     }
   ).getResponseCode();
 
@@ -91,15 +94,45 @@ function codaFilterTable() {
 }
 
 /**
- * Pings a Coda automation endpoint that adds or modifies
- * (if name of villain already found in the Coda table) all
- * rows passed inside the JSON payload, order is guaranteed.
+ * Sends all villains to a Coda automation endpoint that
+ * adds them to a table, uses a single asynchronous fetch request,
+ * order is guaranteed.
  */
 function codaSendDataMultiple() {
 
   const ss = SpreadsheetApp.getActiveSheet();
   ss.getRange(STATUS).clearContent();
-  const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, 4).getValues();
+  const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
+  resultCode = UrlFetchApp.fetch(
+    AUTH.endpoint.codaAddRowsMultipleJsonArray,
+    {
+      method: 'post',
+      headers: { Authorization: `Bearer ${AUTH.token}` },
+      contentType: 'application/json',
+      // JSON paths [] start from 0, XPaths from 1: https://goessner.net/articles/JsonPath/index.html#e3
+      payload: JSON.stringify({ data: table2ArrayObject(data) }),
+      muteHttpExceptions: true
+    }
+  ).getResponseCode();
+
+  ss.getRange(STATUS).setValue(
+    resultCode != 202 ?
+      '🟠' :
+      '🟢'
+  );
+
+}
+
+/**
+ * Pings a Coda automation endpoint that adds or modifies
+ * (if name of villain already found in the Coda table) all
+ * rows passed inside the JSON payload, order is guaranteed.
+ */
+function codaSendUpdateDataMultiple() {
+
+  const ss = SpreadsheetApp.getActiveSheet();
+  ss.getRange(STATUS).clearContent();
+  const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
   resultCode = UrlFetchApp.fetch(
     // AUTH.endpoint.codaAddRowsMultipleJson,
     // AUTH.endpoint.codaAddRowsMultipleJsonArray,
@@ -110,8 +143,8 @@ function codaSendDataMultiple() {
       contentType: 'application/json',
       // payload: JSON.stringify(table2IndexedObject(data))
       // JSON paths [] start from 0, XPaths from 1: https://goessner.net/articles/JsonPath/index.html#e3
-      payload: JSON.stringify({data: table2ArrayObject(data)})
-
+      payload: JSON.stringify({ data: table2ArrayObject(data) }),
+      muteHttpExceptions: true
     }
   ).getResponseCode();
 
@@ -132,26 +165,26 @@ function codaDeleteSelected() {
 
   ss = SpreadsheetApp.getActiveSheet();
   const selectedRanges = ss.getActiveRangeList();
-  
+
   if (selectedRanges) {
 
-    let selectedRows = new Set();
+    const selectedRows = new Set();
     selectedRanges.getRanges().forEach(range => {
       const rangeFirstRow = range.getRowIndex();
       const rangeLastRow = rangeFirstRow + range.getNumRows() - 1;
       let row = rangeFirstRow;
       while (row <= rangeLastRow && row <= ss.getLastRow()) {
-        if(row > HEADING_ROW) selectedRows.add(row - HEADING_ROW - 1);
+        if (row > HEADING_ROW) selectedRows.add(row - HEADING_ROW - 1);
         row++;
       }
     });
+
     if (selectedRows.size > 0) {
-      
-      ss.getRange('A1').clearContent();
-      const [heading, ...rows] = ss.getRange(HEADING_ROW, 1, ss.getLastRow() + HEADING_ROW - 1, 4).getValues();
+
+      ss.getRange(STATUS).clearContent();
+      const [heading, ...rows] = ss.getRange(HEADING_ROW, 1, ss.getLastRow() + HEADING_ROW - 1, DATA_COLUMNS).getValues();
       // Include only selected rows, partial selections are supported
-      const data = [heading,...rows.filter((_, rowIndex) => selectedRows.has(rowIndex))];
-      console.info(data);
+      const data = [heading, ...rows.filter((_, rowIndex) => selectedRows.has(rowIndex))];
 
       resultCode = UrlFetchApp.fetch(
         AUTH.endpoint.codaDeleteSelectedRows,
@@ -161,11 +194,12 @@ function codaDeleteSelected() {
           contentType: 'application/json',
           // We are passing all fields, even though in this use-case only
           // the name field is used to match villains on the Coda's side.
-          payload: JSON.stringify({data: table2ArrayObject(data)})
+          payload: JSON.stringify({ data: table2ArrayObject(data) }),
+          muteHttpExceptions: true
         }
       ).getResponseCode();
 
-      ss.getRange('A1').setValue(
+      ss.getRange(STATUS).setValue(
         resultCode != 202 ?
           '🟠' :
           '🟢'

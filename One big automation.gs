@@ -1,176 +1,117 @@
-// --------------------------------------------------------
-// V2 FUNCTIONS, A SINGLE, MULTI-PURPOSE AUTOMATION IS USED
-// --------------------------------------------------------
+// -------------------------------------------------------------
+// V2 FUNCTIONS, A SINGLE, BIG, MULTI-PURPOSE AUTOMATION IS USED
+// -------------------------------------------------------------
 
+// Commands
+const COMMAND = {
+  empyTable: 'DELETE_ALL_ROWS',
+  filterTable: 'SET_FILTER_CONTROL',
+  sendData: 'ADD_ROWS',
+  sendUpdateData: 'ADD_UPDATE_ROWS',
+  deleteSelected: 'DELETE_SELECTED_ROWS'
+};
 
 /**
- * Sends all villains to a Coda automation endpoint that
- * adds them to a table, uses multiple asynchronous fetch requests,
- * order is not guaranteed.
+ * Wrapper clients
  */
-function codaSendDataV2() {
+const clientCodaEmptyTable = () =>  codaWebHook(COMMAND.empyTable);
+const clientCodaFilterTable = () => codaWebHook(COMMAND.filterTable);
+const clientCodaSendData = () => codaWebHook(COMMAND.sendData);
+const clientCodaSendUpdateData = () => codaWebHook(COMMAND.sendUpdateData);
+const clientCodaDeleteSelected = () => codaWebHook(COMMAND.deleteSelected);
 
-  ss = SpreadsheetApp.getActiveSheet();
-  ss.getRange(STATUS).clearContent();
-  const data = ss.getRange(HEADING_ROW + 1, 1, ss.getLastRow() - HEADING_ROW, 4).getValues();
-  const requests = [];
-  data.forEach(row => {
-    requests.push(
+/**
+ * Proxy function for all things Coda, here!
+ * @param {string} command
+ */
+function codaWebHook(command) {
+
+  /**
+   * UrlFetch() wrapper function, adds action parameter to JSON payload
+   * and returns fetch result code.
+   * @param {string} command    Requested action
+   * @param {Object} [payload]  POST payload as a JS object
+   * @return {number} 
+   */
+  function pingCodaEndpoint(command, payload) {
+    console.info(JSON.stringify({ action: command, ...payload }))
+    return UrlFetchApp.fetch(
+      AUTH.endpoint.codaMultiPurpose,
       {
-        url: AUTH.endpoint.codaAddRows,
         method: 'post',
         headers: { Authorization: `Bearer ${AUTH.token}` },
         contentType: 'application/json',
-        payload: JSON.stringify({
-          name: row[0],
-          rank: row[1],
-          lastFight: row[2],
-          won: row[3]
-        })
-      });
-  });
-  const resultCodes = UrlFetchApp.fetchAll(requests).map(result => result.getResponseCode());
-  ss.getRange(STATUS).setValue(
-    resultCodes.some(code => code != 202) ?
-      '🟠' :
-      '🟢'
-  );
-
-}
-
-/**
- * Pings a Coda automation endpoint that deletes all data in a table,
- * no payload inside the POST request is needed.
- */
-function codaEmptyTableV2() {
-
-  const ss = SpreadsheetApp.getActiveSheet();
-  ss.getRange(STATUS).clearContent();
-  resultCode = UrlFetchApp.fetch(
-    AUTH.endpoint.codaEmptyTable,
-    {
-      method: 'post',
-      headers: { Authorization: `Bearer ${AUTH.token}` },
-      contentType: 'application/json',
-    }
-  ).getResponseCode();
-
-  ss.getRange(STATUS).setValue(
-    resultCode != 202 ?
-      '🟠' :
-      '🟢'
-  );
-
-}
-
-/**
- * Pings a Coda automation endpoint that sets a user control
- * to apply filter data of a table in a specific way.
- */
-function codaFilterTableV2() {
-
-  ss = SpreadsheetApp.getActiveSheet();
-  ss.getRange(STATUS).clearContent();
-  const rank = ss.getRange(FILTER).getValue();
-  resultCode = UrlFetchApp.fetch(
-    AUTH.endpoint.codaFilterTable,
-    {
-      method: 'post',
-      headers: { Authorization: `Bearer ${AUTH.token}` },
-      contentType: 'application/json',
-      payload: JSON.stringify({ rank: !rank ? 'A+,A,B,C,D,E' : rank })
-    }
-  ).getResponseCode();
-
-  SpreadsheetApp.getActiveSheet().getRange(STATUS).setValue(
-    resultCode != 202 ?
-      '🟠' :
-      '🟢'
-  );
-
-}
-
-/**
- * Pings a Coda automation endpoint that adds or modifies
- * (if name of villain already found in the Coda table) all
- * rows passed inside the JSON payload, order is guaranteed.
- */
-function codaSendDataMultipleV2() {
-
-  const ss = SpreadsheetApp.getActiveSheet();
-  ss.getRange(STATUS).clearContent();
-  const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, 4).getValues();
-  resultCode = UrlFetchApp.fetch(
-    // AUTH.endpoint.codaAddRowsMultipleJson,
-    // AUTH.endpoint.codaAddRowsMultipleJsonArray,
-    AUTH.endpoint.codaAddModifyRowsMultipleArray,
-    {
-      method: 'post',
-      headers: { Authorization: `Bearer ${AUTH.token}` },
-      contentType: 'application/json',
-      // payload: JSON.stringify(table2IndexedObject(data))
-      // JSON paths [] start from 0, XPaths from 1: https://goessner.net/articles/JsonPath/index.html#e3
-      payload: JSON.stringify({data: table2ArrayObject(data)})
-
-    }
-  ).getResponseCode();
-
-  ss.getRange(STATUS).setValue(
-    resultCode != 202 ?
-      '🟠' :
-      '🟢'
-  );
-
-}
-
-/**
- * Pings a Coda automation endpoint that deletes all rows
- * passed inside the JSON payload, name of villain field
- * is used to target rows to be deleted.
- */
-function codaDeleteSelectedV2() {
-
-  ss = SpreadsheetApp.getActiveSheet();
-  const selectedRanges = ss.getActiveRangeList();
-  
-  if (selectedRanges) {
-
-    let selectedRows = new Set();
-    selectedRanges.getRanges().forEach(range => {
-      const rangeFirstRow = range.getRowIndex();
-      const rangeLastRow = rangeFirstRow + range.getNumRows() - 1;
-      let row = rangeFirstRow;
-      while (row <= rangeLastRow && row <= ss.getLastRow()) {
-        if(row > HEADING_ROW) selectedRows.add(row - HEADING_ROW - 1);
-        row++;
+        payload: JSON.stringify({ action: command, ...payload }),
+        muteHttpExceptions: true
       }
-    });
-    if (selectedRows.size > 0) {
-      
-      ss.getRange('A1').clearContent();
-      const [heading, ...rows] = ss.getRange(HEADING_ROW, 1, ss.getLastRow() + HEADING_ROW - 1, 4).getValues();
-      // Include only selected rows, partial selections are supported
-      const data = [heading,...rows.filter((_, rowIndex) => selectedRows.has(rowIndex))];
-      console.info(data);
-
-      resultCode = UrlFetchApp.fetch(
-        AUTH.endpoint.codaDeleteSelectedRows,
-        {
-          method: 'post',
-          headers: { Authorization: `Bearer ${AUTH.token}` },
-          contentType: 'application/json',
-          // We are passing all fields, even though in this use-case only
-          // the name field is used to match villains on the Coda's side.
-          payload: JSON.stringify({data: table2ArrayObject(data)})
-        }
-      ).getResponseCode();
-
-      ss.getRange('A1').setValue(
-        resultCode != 202 ?
-          '🟠' :
-          '🟢'
-      );
-
-    }
+    ).getResponseCode();
   }
+
+  if(Object.values(COMMAND).includes(command)) {
+
+    // Clears status cell
+    const ss = SpreadsheetApp.getActiveSheet();
+    ss.getRange(STATUS).clearContent();
+    let responseCode, data;
+
+    switch (command) {
+
+      // 1️⃣ Deletes all rows in a Coda table
+      case COMMAND.empyTable:
+        responseCode = pingCodaEndpoint(command);
+        break;
+
+      // 2️⃣ Sets filter user control affecting a Coda table
+      case COMMAND.filterTable:
+        const rank = ss.getRange(FILTER).getValue();
+        responseCode = pingCodaEndpoint(command, { rank: !rank ? 'A+,A,B,C,D,E' : rank });
+        break;
+
+      // 3️⃣ Adds rows to a Coda table, can cause duplicates on Coda's side
+      case COMMAND.sendData:
+        data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
+        responseCode = pingCodaEndpoint(command, { data: table2ArrayObject(data) })
+        break;
+
+      // 4️⃣ Adds or updates rows in a Coda table, name field is used to match villains (hard-wired in a Coda's rule).
+      case COMMAND.sendUpdateData:
+        data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
+        responseCode = pingCodaEndpoint(command, { data: table2ArrayObject(data) });
+        break;
+
+      // 5️⃣ Deletes selected rows in a Coda table, name of villain field is used to target rows to be removed
+      case COMMAND.deleteSelected:
+        const selectedRanges = ss.getActiveRangeList();      
+        // Gets selected rows, supports partial selections
+        if (selectedRanges) {
+          const selectedRows = new Set();
+          selectedRanges.getRanges().forEach(range => {
+            const rangeFirstRow = range.getRowIndex();
+            const rangeLastRow = rangeFirstRow + range.getNumRows() - 1;
+            let row = rangeFirstRow;
+            while (row <= rangeLastRow && row <= ss.getLastRow()) {
+              if(row > HEADING_ROW) selectedRows.add(row - HEADING_ROW - 1);
+              row++;
+            }
+          });
+          // Pings Coda if some rows have been selected
+          if (selectedRows.size > 0) {            
+            const [heading, ...rows] = ss.getRange(HEADING_ROW, 1, ss.getLastRow() + HEADING_ROW - 1, DATA_COLUMNS).getValues();
+            const data = [heading,...rows.filter((_, rowIndex) => selectedRows.has(rowIndex))];
+            responseCode = pingCodaEndpoint(command, { data: table2ArrayObject(data) });
+          }
+        }
+        break;
+
+    } // end of command processing [SWITCH]
+    console.info(responseCode);
+    // Sets status cell
+    ss.getRange(STATUS).setValue(
+    responseCode != 202 ?
+      '🟠' :
+      '🟢'
+    );
+  
+  } // end of valid command check [IF]
+
 }

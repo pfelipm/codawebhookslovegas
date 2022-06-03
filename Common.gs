@@ -9,12 +9,12 @@
  */
 
 
-// ------------------------------------------
-// CONSTANTS AND A COUPLE OF HELPER FUNCTIONS
-// ------------------------------------------
-
+// -------------------------------------
+// COMMON CONSTANTS AND HELPER FUNCTIONS
+// -------------------------------------
 
 const HEADING_ROW = 2;
+const DATA_COLUMNS = 4;
 const STATUS = 'A1';
 const FILTER = 'F2';
 const AUTH = {
@@ -27,6 +27,7 @@ const AUTH = {
     codaAddRowsMultipleJsonArray: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-x9875DrYnv',
     codaAddModifyRowsMultipleArray: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-M2m34OgpOq',
     codaDeleteSelectedRows: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-gMrI9G_5Pg',
+    // One endpoint to rule them all!
     codaMultiPurpose: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-Opug6an_fo'
   }
 }
