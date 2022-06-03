@@ -1,6 +1,6 @@
 /**
- * Some PoC Apps Script functions that do stuff with data in a Coda document
- * table using automations triggered by Coda webhooks.
+ * Some PoC Apps Script functions that do stuff with data in a table
+ * inside a Coda document using automations triggered by Coda webhooks.
  * Test Doc: https://coda.io/d/_ddHZiRsJNFq/Webhooks_sufNH
  *
  * @pfelipm (01/06/22)
@@ -51,7 +51,7 @@ const AUTH = {
  *    { "2": { "A": 4, "B": 5, "C": 6} },
  * }
  * 
- * Not currently used!
+ * NOT CURRENTLY IN USE
  */
 function table2IndexedObject(data) {
 

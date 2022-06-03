@@ -67,7 +67,7 @@ function codaEmptyTable() {
 
 /**
  * Pings a Coda automation endpoint that sets a user control
- * to apply filtering to a table in a specific way.
+ * to filter a table in a specific way.
  */
 function codaFilterTable() {
 
@@ -104,11 +104,13 @@ function codaSendDataMultiple() {
   ss.getRange(STATUS).clearContent();
   const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
   resultCode = UrlFetchApp.fetch(
+    // AUTH.endpoint.codaAddRowsMultipleJson,
     AUTH.endpoint.codaAddRowsMultipleJsonArray,
     {
       method: 'post',
       headers: { Authorization: `Bearer ${AUTH.token}` },
       contentType: 'application/json',
+      // payload: JSON.stringify(table2IndexedObject(data))
       // JSON paths [] start from 0, XPaths from 1: https://goessner.net/articles/JsonPath/index.html#e3
       payload: JSON.stringify({ data: table2ArrayObject(data) }),
       muteHttpExceptions: true
@@ -134,14 +136,11 @@ function codaSendUpdateDataMultiple() {
   ss.getRange(STATUS).clearContent();
   const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
   resultCode = UrlFetchApp.fetch(
-    // AUTH.endpoint.codaAddRowsMultipleJson,
-    // AUTH.endpoint.codaAddRowsMultipleJsonArray,
     AUTH.endpoint.codaAddModifyRowsMultipleArray,
     {
       method: 'post',
       headers: { Authorization: `Bearer ${AUTH.token}` },
       contentType: 'application/json',
-      // payload: JSON.stringify(table2IndexedObject(data))
       // JSON paths [] start from 0, XPaths from 1: https://goessner.net/articles/JsonPath/index.html#e3
       payload: JSON.stringify({ data: table2ArrayObject(data) }),
       muteHttpExceptions: true

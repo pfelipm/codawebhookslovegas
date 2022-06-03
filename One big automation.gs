@@ -34,7 +34,6 @@ function codaWebHook(command) {
    * @return {number} 
    */
   function pingCodaEndpoint(command, payload) {
-    console.info(JSON.stringify({ action: command, ...payload }))
     return UrlFetchApp.fetch(
       AUTH.endpoint.codaMultiPurpose,
       {
@@ -73,7 +72,7 @@ function codaWebHook(command) {
         responseCode = pingCodaEndpoint(command, { data: table2ArrayObject(data) })
         break;
 
-      // 4️⃣ Adds or updates rows in a Coda table, name field is used to match villains (hard-wired in a Coda's rule).
+      // 4️⃣ Adds or updates rows in a Coda table, name field is used to match villains
       case COMMAND.sendUpdateData:
         data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
         responseCode = pingCodaEndpoint(command, { data: table2ArrayObject(data) });
@@ -94,7 +93,7 @@ function codaWebHook(command) {
               row++;
             }
           });
-          // Pings Coda if some rows have been selected
+          // Pings Coda endpoint if some rows have been selected
           if (selectedRows.size > 0) {            
             const [heading, ...rows] = ss.getRange(HEADING_ROW, 1, ss.getLastRow() + HEADING_ROW - 1, DATA_COLUMNS).getValues();
             const data = [heading,...rows.filter((_, rowIndex) => selectedRows.has(rowIndex))];
@@ -104,7 +103,7 @@ function codaWebHook(command) {
         break;
 
     } // end of command processing [SWITCH]
-    console.info(responseCode);
+    
     // Sets status cell
     ss.getRange(STATUS).setValue(
     responseCode != 202 ?
