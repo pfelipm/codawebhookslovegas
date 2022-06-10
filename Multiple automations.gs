@@ -47,7 +47,7 @@ function codaEmptyTable() {
 
   const ss = SpreadsheetApp.getActiveSheet();
   ss.getRange(STATUS).clearContent();
-  resultCode = UrlFetchApp.fetch(
+  const resultCode = UrlFetchApp.fetch(
     AUTH.endpoint.codaEmptyTable,
     {
       method: 'post',
@@ -74,7 +74,7 @@ function codaFilterTable() {
   ss = SpreadsheetApp.getActiveSheet();
   ss.getRange(STATUS).clearContent();
   const rank = ss.getRange(FILTER).getValue();
-  resultCode = UrlFetchApp.fetch(
+  const resultCode = UrlFetchApp.fetch(
     AUTH.endpoint.codaFilterTable,
     {
       method: 'post',
@@ -103,7 +103,7 @@ function codaSendDataMultiple() {
   const ss = SpreadsheetApp.getActiveSheet();
   ss.getRange(STATUS).clearContent();
   const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
-  resultCode = UrlFetchApp.fetch(
+  const resultCode = UrlFetchApp.fetch(
     // AUTH.endpoint.codaAddRowsMultipleJson,
     AUTH.endpoint.codaAddRowsMultipleJsonArray,
     {
@@ -135,7 +135,7 @@ function codaSendUpdateDataMultiple() {
   const ss = SpreadsheetApp.getActiveSheet();
   ss.getRange(STATUS).clearContent();
   const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
-  resultCode = UrlFetchApp.fetch(
+  const resultCode = UrlFetchApp.fetch(
     AUTH.endpoint.codaAddModifyRowsMultipleArray,
     {
       method: 'post',
@@ -185,7 +185,7 @@ function codaDeleteSelected() {
       // Include only selected rows, partial selections are supported
       const data = [heading, ...rows.filter((_, rowIndex) => selectedRows.has(rowIndex))];
 
-      resultCode = UrlFetchApp.fetch(
+      const resultCode = UrlFetchApp.fetch(
         AUTH.endpoint.codaDeleteSelectedRows,
         {
           method: 'post',
