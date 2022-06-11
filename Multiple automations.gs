@@ -17,7 +17,7 @@ function codaSendData() {
   data.forEach(row => {
     requests.push(
       {
-        url: AUTH.endpoint.codaAddRows,
+        url: AUTH.endpoint.codaAddRow,
         method: 'post',
         headers: { Authorization: `Bearer ${AUTH.token}` },
         contentType: 'application/json',
@@ -105,7 +105,7 @@ function codaSendDataMultiple() {
   const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
   const resultCode = UrlFetchApp.fetch(
     // AUTH.endpoint.codaAddRowsMultipleJson,
-    AUTH.endpoint.codaAddRowsMultipleJsonArray,
+    AUTH.endpoint.codaAddRowsJsonArray,
     {
       method: 'post',
       headers: { Authorization: `Bearer ${AUTH.token}` },
@@ -136,7 +136,7 @@ function codaSendUpdateDataMultiple() {
   ss.getRange(STATUS).clearContent();
   const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
   const resultCode = UrlFetchApp.fetch(
-    AUTH.endpoint.codaAddModifyRowsMultipleArray,
+    AUTH.endpoint.codaAddModifyRowsArray,
     {
       method: 'post',
       headers: { Authorization: `Bearer ${AUTH.token}` },

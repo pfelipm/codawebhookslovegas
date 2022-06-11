@@ -20,11 +20,11 @@ const FILTER = 'F2';
 const AUTH = {
   token: 'ce538f15-6275-48a4-8392-a6ed42dfb4b8',
   endpoint: {
-    codaAddRows: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-N3uNWXEE2O',
+    codaAddRow: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-N3uNWXEE2O',
     codaEmptyTable: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-J_w8aWbFaM',
     codaFilterTable: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-8K891Ouklf',
-    codaAddRowsMultipleJson: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-W7trGjZqKg',
-    codaAddRowsMultipleJsonArray: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-x9875DrYnv',
+    codaAddRowsJson: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-W7trGjZqKg',
+    codaAddRowsJsonArray: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-x9875DrYnv',
     codaAddModifyRowsMultipleArray: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-M2m34OgpOq',
     codaDeleteSelectedRows: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-gMrI9G_5Pg',
     // One endpoint to rule them all!

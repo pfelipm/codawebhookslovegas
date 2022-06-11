@@ -2,6 +2,7 @@
 // V2 FUNCTIONS, A SINGLE, BIG, MULTI-PURPOSE AUTOMATION IS USED
 // -------------------------------------------------------------
 
+
 // Commands
 const COMMAND = {
   empyTable: 'DELETE_ALL_ROWS',
