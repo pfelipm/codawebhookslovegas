@@ -4,4 +4,4 @@
 
 # Coda webhooks 💙 Google Apps Script
 
-Some PoC Apps Script functions that do stuff with data in a Coda document table using automations triggered by Coda webhooks. Companion repository for my post Coda webhooks love GAS.
+Some PoC Apps Script functions that do stuff with data in a Coda document table using automations triggered by Coda webhooks. Companion repository for my post [Coda webhooks love GAS](https://pablofelip.online/coda-webhooks-love-apps-script/).
