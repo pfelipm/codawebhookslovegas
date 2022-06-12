@@ -25,52 +25,16 @@ const AUTH = {
     codaFilterTable: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-8K891Ouklf',
     codaAddRowsJson: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-W7trGjZqKg',
     codaAddRowsJsonArray: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-x9875DrYnv',
-    codaAddModifyRowsMultipleArray: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-M2m34OgpOq',
+    codaAddModifyRowsJsonArray: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-M2m34OgpOq',
     codaDeleteSelectedRows: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-gMrI9G_5Pg',
     // One endpoint to rule them all!
     codaMultiPurpose: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-Opug6an_fo'
   }
-}
-
-/**
- * Transforms a data interval, with headings, into an object
- * with a property named after the index of each row and a
- * global numElements (rows in the data interval) property
- * @param   {Array[]} data 2D array with heading labels
- * @return  {Object}
- * 
- * Sample input:
- * |"A" | "B" | "C"]
- * | 1  |  2  |  3 |
- * | 4  |  5  |  6 |
- *
- * Sample output:
- * {
- *    numElements: 2,
- *    { "1": { "A": 1, "B": 2, "C": 3} },
- *    { "2": { "A": 4, "B": 5, "C": 6} },
- * }
- * 
- * NOT CURRENTLY IN USE
- */
-function table2IndexedObject(data) {
-
-  const [heading, ...rows] = data;
-  const object = rows.reduce((obj, row, rowIndex) => {
-    obj[rowIndex + 1] = row.reduce((obj, field, colIndex) => {
-      obj[heading[colIndex]] = field;
-      return obj;
-    }, {});
-    return obj;
-  }, {});
-  object.numElements = rows.length;
-  return object;
-
-}
+};
 
 /**
  * Transforms a data interval, with headings, into a JSON-like object
- * with a global numElements (rows in the data interval) property
+ * with a global numElements (rows in the data interval) property.
  * @param   {Array[]} data 2D array with heading labels
  * @return  {Object}
  * 
@@ -99,5 +63,41 @@ function table2ArrayObject(data) {
   }, {});
   
   return { numElements: arrayJson.length, rows: arrayJson };
+
+}
+
+/**
+ * Transforms a data interval, with headings, into an object
+ * with a property named after the index of each row and a
+ * global numElements (rows in the data interval) property.
+ * @param   {Array[]} data 2D array with heading labels
+ * @return  {Object}
+ * 
+ * Sample input:
+ * |"A" | "B" | "C"]
+ * | 1  |  2  |  3 |
+ * | 4  |  5  |  6 |
+ *
+ * Sample output:
+ * {
+ *    numElements: 2,
+ *    { "1": { "A": 1, "B": 2, "C": 3} },
+ *    { "2": { "A": 4, "B": 5, "C": 6} },
+ * }
+ * 
+ * ### NOT CURRENTLY IN USE ####
+ */
+function table2IndexedObject(data) {
+
+  const [heading, ...rows] = data;
+  const object = rows.reduce((obj, row, rowIndex) => {
+    obj[rowIndex + 1] = row.reduce((obj, field, colIndex) => {
+      obj[heading[colIndex]] = field;
+      return obj;
+    }, {});
+    return obj;
+  }, {});
+  object.numElements = rows.length;
+  return object;
 
 }

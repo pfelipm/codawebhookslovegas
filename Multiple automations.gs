@@ -112,7 +112,7 @@ function codaSendDataMultiple() {
       contentType: 'application/json',
       // payload: JSON.stringify(table2IndexedObject(data))
       // JSON paths [] start from 0, XPaths from 1: https://goessner.net/articles/JsonPath/index.html#e3
-      payload: JSON.stringify({ data: table2ArrayObject(data) }),
+      payload: JSON.stringify(table2ArrayObject(data)),
       muteHttpExceptions: true
     }
   ).getResponseCode();
@@ -136,13 +136,13 @@ function codaSendUpdateDataMultiple() {
   ss.getRange(STATUS).clearContent();
   const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
   const resultCode = UrlFetchApp.fetch(
-    AUTH.endpoint.codaAddModifyRowsArray,
+    AUTH.endpoint.codaAddModifyRowsJsonArray,
     {
       method: 'post',
       headers: { Authorization: `Bearer ${AUTH.token}` },
       contentType: 'application/json',
       // JSON paths [] start from 0, XPaths from 1: https://goessner.net/articles/JsonPath/index.html#e3
-      payload: JSON.stringify({ data: table2ArrayObject(data) }),
+      payload: JSON.stringify(table2ArrayObject(data)),
       muteHttpExceptions: true
     }
   ).getResponseCode();
@@ -193,7 +193,7 @@ function codaDeleteSelected() {
           contentType: 'application/json',
           // We are passing all fields, even though in this use-case only
           // the name field is used to match villains on the Coda's side.
-          payload: JSON.stringify({ data: table2ArrayObject(data) }),
+          payload: JSON.stringify(table2ArrayObject(data)),
           muteHttpExceptions: true
         }
       ).getResponseCode();

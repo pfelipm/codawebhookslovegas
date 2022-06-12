@@ -70,13 +70,13 @@ function codaWebHook(command) {
       // 3️⃣ Adds rows to a Coda table, can cause duplicates on Coda's side
       case COMMAND.sendData:
         data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
-        responseCode = pingCodaEndpoint(command, { data: table2ArrayObject(data) })
+        responseCode = pingCodaEndpoint(command, table2ArrayObject(data));
         break;
 
       // 4️⃣ Adds or updates rows in a Coda table, name field is used to match villains
       case COMMAND.sendUpdateData:
         data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
-        responseCode = pingCodaEndpoint(command, { data: table2ArrayObject(data) });
+        responseCode = pingCodaEndpoint(command, table2ArrayObject(data));
         break;
 
       // 5️⃣ Deletes selected rows in a Coda table, name of villain field is used to target rows to be removed
@@ -98,7 +98,7 @@ function codaWebHook(command) {
           if (selectedRows.size > 0) {            
             const [heading, ...rows] = ss.getRange(HEADING_ROW, 1, ss.getLastRow() + HEADING_ROW - 1, DATA_COLUMNS).getValues();
             const data = [heading,...rows.filter((_, rowIndex) => selectedRows.has(rowIndex))];
-            responseCode = pingCodaEndpoint(command, { data: table2ArrayObject(data) });
+            responseCode = pingCodaEndpoint(command, table2ArrayObject(data));
           }
         }
         break;
