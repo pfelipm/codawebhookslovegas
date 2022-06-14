@@ -104,7 +104,7 @@ function codaSendDataMultiple() {
   ss.getRange(STATUS).clearContent();
   const data = ss.getRange(HEADING_ROW, 1, ss.getLastRow() - HEADING_ROW + 1, DATA_COLUMNS).getValues();
   const resultCode = UrlFetchApp.fetch(
-    // AUTH.endpoint.codaAddRowsMultipleJson,
+    // AUTH.endpoint.codaAddRowsJson,
     AUTH.endpoint.codaAddRowsJsonArray,
     {
       method: 'post',

@@ -18,17 +18,17 @@ const DATA_COLUMNS = 4;
 const STATUS = 'A1';
 const FILTER = 'F2';
 const AUTH = {
-  token: 'ce538f15-6275-48a4-8392-a6ed42dfb4b8',
+  token: 'YOUR_API_KEY', // provide your own!
   endpoint: {
-    codaAddRow: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-N3uNWXEE2O',
-    codaEmptyTable: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-J_w8aWbFaM',
-    codaFilterTable: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-8K891Ouklf',
-    codaAddRowsJson: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-W7trGjZqKg',
-    codaAddRowsJsonArray: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-x9875DrYnv',
-    codaAddModifyRowsJsonArray: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-M2m34OgpOq',
-    codaDeleteSelectedRows: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-gMrI9G_5Pg',
+    codaAddRow: 'ENDPOINT_URL_ADD_ROW', // provide your own!
+    codaEmptyTable: 'ENDPOINT_URL_EMPTY_TABLE', // provide your own!
+    codaFilterTable: 'ENDPOINT_URL_FILTER TABLE', // provide your own!
+    codaAddRowsJson: 'ENDPOINT_URL_ADD_ROWS_JSON_V1', // provide your own!
+    codaAddRowsJsonArray: 'ENDPOINT_URL_ADD_ROWS', // provide your own!
+    codaAddModifyRowsJsonArray: 'ENDPOINT_URL_ADD_MODIFY_ROWS', // provide your own!
+    codaDeleteSelectedRows: 'ENDPOINT_URL_DELETE_SELECTED_ROWS', // provide your own!
     // One endpoint to rule them all!
-    codaMultiPurpose: 'https://coda.io/apis/v1/docs/dHZiRsJNFq/hooks/automation/grid-auto-Opug6an_fo'
+    codaMultiPurpose: 'ENDPOINT_URL_MULTI_PURPOSE' // provide your own!
   }
 };
 
